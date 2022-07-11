@@ -1,0 +1,50 @@
+;Implementar un programa que espere 10 segundos luego de empezar y 
+;recien ahi imprima el mensjae "hola"
+
+eoi equ 20h
+imr equ 21h
+int_1 equ 25h
+id_int1 equ 20
+
+;Registros del TIMER
+cont equ 10h
+comp equ 11h
+
+;org 80
+;dir_atender dw 3000h
+
+org 3000h
+atender: mov bx, offset msj
+         mov al, 5
+         int 7
+         mov flag,1
+         mov al, 20h
+         out eoi, al
+         iret
+
+org 1000h
+msj db "hola!"
+flag db 0
+
+org 2000h
+cli 
+mov al, 0fdh ; 1111 1101
+out imr ,al
+
+mov al, id_int1
+out int_1, al
+
+mov bx, id_int1
+mov word ptr [bx], atender
+
+;configuracion TIMER
+mov al, 0
+out cont, al
+mov al, 10
+out comp, al
+sti
+
+loop: cmp flag,1
+      jnz loop
+int 0
+end

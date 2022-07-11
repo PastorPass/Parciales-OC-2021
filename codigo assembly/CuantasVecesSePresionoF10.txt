@@ -1,0 +1,31 @@
+; Escribir un programa que cuenta el numero de veces que se 
+;presiono la tecla f10 y que acumule este valor en el registro DX
+
+eoi equ 20h
+imr equ 21h
+int_0 equ 24h
+ID_f10 equ 10
+
+org 3000h
+rutinaF10: push ax
+           inc dx
+           mov al, 20h
+           out eoi,al
+           pop ax
+           iret
+
+org 2000h
+cli 
+mov al, 0feh
+out imr, al
+
+mov al,ID_f10
+out int_0,al
+
+mov dx, 0
+mov bx, 40
+mov word ptr [bx], rutinaF10
+sti
+loop: jmp loop
+int 0
+end

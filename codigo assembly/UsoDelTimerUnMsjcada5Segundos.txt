@@ -1,0 +1,52 @@
+;Escribir un programa que muestre en pantalla la cadena de 
+;caracteres "no debo programar en assembly" repetidamente cada 5
+;segundos . El programa nunca termina
+
+eoi equ 20h
+imr equ 21h
+int_1 equ 25h
+id_int1 equ 20
+
+;Registros del TIMER
+cont equ 10h
+comp equ 11h
+
+;org 80
+;dir_atender dw 3000h
+
+org 3000h
+manejador: mov al, 0    ; reinicio el registro cont = 0
+           out cont, al
+           ; ejecuta cada 5 segundos
+           mov bx, offset msj
+           mov al, offset fin - offset msj
+           int 7
+           mov al, 20h
+           out eoi, al
+           iret
+
+org 1000h
+msj db "no debo programar en assembly"
+newLine db 13
+fin db ?
+
+org 2000h
+cli 
+mov al, 0fdh ; 1111 1101
+out imr ,al
+
+mov al, id_int1
+out int_1, al
+
+mov bx, id_int1
+mov word ptr [bx], manejador
+
+;configuracion TIMER
+mov al, 0
+out cont, al
+mov al, 5
+out comp, al
+sti
+
+loop: jmp loop
+end

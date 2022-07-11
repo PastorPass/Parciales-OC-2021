@@ -1,0 +1,57 @@
+;Impresora con HS e Interrupciones
+;PIC
+eoi equ 20h
+imr equ 21h
+int_2 equ 26h
+id_int2 equ 12
+
+;Impresora
+dato equ 40h
+estado equ 41h
+
+org 48
+dir_imp dw 3000h
+
+org 1000h
+str db "los chicos del guetto"
+fin db ?
+
+org 3000h
+imp: mov al, [bx]
+     out dato, al
+     
+     inc bx
+     dec cx
+     jnz volver
+     
+     ;desactivar interrupcion
+     mov al, 0ffh
+     out imr, al
+     
+        ;volver
+volver: mov al, 20h
+        out eoi , al
+        iret
+
+org 2000h
+cli
+mov al, 0fbh  ; 1111 1011
+out imr , al
+mov al, id_int2
+out int_2, al
+
+;mov bx,48  ; debe ser el id_int2 * 4 = 48
+;mov word ptr [bx], imp
+
+in al, estado
+or al, 80h
+out estado, al
+
+mov bx, offset str
+mov cx, offset fin - offset str
+sti
+
+loop: cmp cx, 0
+      jnz loop
+int 0
+end

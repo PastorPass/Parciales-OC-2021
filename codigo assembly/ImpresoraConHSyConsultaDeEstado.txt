@@ -1,0 +1,21 @@
+;Impresora con HS y consulta de Estado(Polling)
+dato equ 40h
+estado equ 41h
+
+org 1000h
+str db "milanesas"
+fin db ?
+
+org 2000h
+mov cx,offset fin - offset str
+mov bx, offset str
+loop: in al, estado
+      and al, 1
+      jnz loop
+      mov al, [bx]
+      out dato, al
+      inc bx
+      dec cx
+      jnz loop
+int 0
+end

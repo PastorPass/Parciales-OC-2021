@@ -1,0 +1,54 @@
+; Como imprimir un caracter + Consulta De Estado + Subrutina
+;PIO
+pa equ 30h      ; Estado (simula el estado del registro de la impresora)
+pb equ 31h      ; dato (simula el dato del registro de la impresora)
+ca equ 32h      ; (XXXX XX01)
+cb equ 33h      ; (Todos de salida) --> 0000 0000 
+
+org 1000h
+char db "a"
+
+org 3000h
+conf_pio: nop
+          ;configuro ca
+          mov al, 01h
+          out ca, al
+          
+          ;configuro cb
+          mov al, 0
+          out cb, al
+          ret
+
+org 3500h
+;Consulta de Estado
+poll: in al, pa
+      and al,1
+      jnz poll
+      ret
+
+org 3200h
+strobe_0: in al, pa
+          and al, 0fdh
+          out pa, al
+          ret
+          
+org 3400h
+strobe_1: in al, pa
+          or al, 02h
+          out pa, al
+          ret
+
+org 2000h
+;Configuracion del PIO para 
+call conf_pio
+
+;Consulta de Estado (polling)
+call poll
+
+;enviar Caracter
+mov al, char
+out pb, al
+call strobe_0
+call strobe_1
+int 0
+end

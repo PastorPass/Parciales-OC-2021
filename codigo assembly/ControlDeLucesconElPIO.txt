@@ -1,0 +1,34 @@
+;Leer un digito de teclado -> del 0 al 7
+;Prender la luz del bit correspondiente
+
+pb equ 31h
+cb equ 33h
+
+org 1000h
+digito db ?
+cero db "0"
+
+org 2000h
+mov al, 0
+out cb, al
+
+;leer digito
+mov bx, offset digito
+int 6
+mov cl, [bx]
+
+;restar ascii
+sub cl,cero   ; resta el ascii
+
+;rotar izq , cl veces
+mov al, 1
+loop: cmp cl, 0
+      jz mandar
+      add al, al
+      dec cl
+      jmp loop
+      
+;Prender la luz
+mandar: out pb,al
+int 0
+end

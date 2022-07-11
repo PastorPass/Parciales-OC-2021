@@ -1,0 +1,24 @@
+;Adivinar la clave --> infinitos intentos
+;Leer el valor de las llaves hasta que coincida con la clave
+pa equ 30h
+ca equ 32h
+
+org 1000h
+clave db 6fh  ;llaves = 0110 1111
+msj db "correcto"
+fin db ?
+
+org 2000h
+mov al, 11111111b
+out ca, al
+
+loop: in al, pa
+      cmp clave, al ;deben coincidir las llaves con la clave =0110 1111
+      jnz loop
+      
+;mensaje
+mov bx, offset msj
+mov al, offset fin - offset msj
+int 7
+int 0
+end
